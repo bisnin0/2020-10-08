@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<meta name="viewport" content="width=device, initial-scale=1"/> 
+<link rel="stylesheet" href="../bootstrap/bootstrap.css" type="text/css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+<script src="../bootstrap/bootstrap.js"></script>
+<style>
+	div{
+		margin:5px;
+	}
+</style>
+<script>
+	$(function(){
+		$.ajax({
+			url:'ajax_rss.xml',
+			dataType : "xml",
+			success : function(result){
+				var cnt = $(result).find("item").length
+				//console.log(cnt);
+				var img;
+				var alink;
+				if(cnt>0){
+					$(result).find('item').each(function(){
+						var tag="<div style='border:1px solid black'><div style='border:1px solid gray; width:500px'>";
+						tag+="<h4>"+$(this).find('title').text()+"</h4>";
+						tag+="[날짜] "+$(this).find('pubDate').text();
+						tag+="<br/>[기자] "+$(this).find('author').text()+"</div>";
+						alink=$(this).find('link').text();
+						tag+="<div style='border:1px solid gray'>"+"<a href='"+alink+"'>"+$(this).find('description').text()+"</a>";
+						img =$(this).find('comments').text(); 
+						tag+="<br/><img src='"+img+"'/>"+"</div></div>";	
+						
+						
+						$(".container").append(tag);
+						
+					});
+				}
+			},
+			error:function(request){
+				console.log("code="+request.code);
+				console.log("message="+request.responseText);
+			}
+			
+		});
+	});
+</script>
+</head>
+<body>
+<div class="container">
+	
+
+</div>
+
+</body>
+</html>

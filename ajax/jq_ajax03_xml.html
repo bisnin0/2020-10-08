@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<meta name="viewport" content="width=device, initial-scale=1"/> 
+<link rel="stylesheet" href="../bootstrap/bootstrap.css" type="text/css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+<script src="../bootstrap/bootstrap.js"></script>
+<script>
+	$(function(){
+		$("#btnXml").on('click',function(){
+			$.ajax({
+				url:'ajax_data.xml', //만약 다른 서버라면 http://~이런식으로 주소
+				dataType:"xml",
+				success:function(result123){
+					//result123(변수를 뭐로 하는지는 내마음. 이름 다르게 써도 된다.)..
+					//result123를 $(result123)로 변환하여 데이터를 얻어올수 있다.
+					var cnt = $(result123).find("record").length //record는 ajax_data.xml에서 회원수다.
+					//console.log(count);
+					if(cnt>0){ //0보다 크면.. 읽어온 회원이 있으면
+						$(result123).find('record').each(function(){ //resut123에서 찾아라 record를. 그걸 가지고 .each = 반복해라. function을 
+							var tag = "<tr>";
+							tag+= "<td>"+$(this).find("username").text()+"</td>";   //this는 현재 record . 한바뀌돌때는 하나의 record정보를 가지고 있으니까. 
+							tag+= "<td>"+$(this).find("tel").text()+"</td>";
+							tag+= "<td>"+$(this).find("address").text()+"</td></tr>";
+							
+							$("#juso").append(tag);
+						});
+					}
+				},
+				error:function(request, status, error){ //에러났을때
+					console.log("code="+request.code);  //에러코드
+					console.log("message="+request.responseText); //에러메시지
+					consol.log("error="+error); //
+				}
+			});
+		});
+	});
+</script>
+</head>
+<body>
+<div class="container">
+	<input type="button" id="btnXml" class="btn btn-primary"value="클릭하시면 서버에서 xml파일의 정보를 비동기식으로 가져옵니다." />
+	<table class="table" id="juso"></table>
+</div>
+</body>
+</html>

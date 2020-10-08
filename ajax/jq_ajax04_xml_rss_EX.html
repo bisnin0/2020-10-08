@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<meta name="viewport" content="width=device, initial-scale=1"/> 
+<link rel="stylesheet" href="../bootstrap/bootstrap.css" type="text/css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+<script src="../bootstrap/bootstrap.js"></script>
+<style>
+	img{
+	width:100px;
+	height:100px;
+	}
+</style>
+<script>
+	$(function(){
+		$.ajax({
+			url :'ajax_rss.xml',
+			dataType:'xml',
+			success:function(result){
+				if($(result).find('item').length>0){
+					$(result).find('item').each(function(){
+						var title = $(this).find('title').text(); //뉴스제목
+						var date = $(this).find('pubDate').text(); //기사쓴 날짜
+						// 2020-10-10 00:00:00
+						//console.log(date);
+						var dateObj = new Date(date);
+						var y = dateObj.getFullYear();
+						var m = dateObj.getMonth()+1; //+1
+						if(m<10){
+							m="0"+m;
+						}
+						var d = dateObj.getDate();
+						if(d<10){
+							d="0"+d;
+						}
+						var h = dateObj.getHours();
+						if(h<10){
+							h="0"+h;
+						}
+						var mi = dateObj.getMinutes();
+						if(mi<10){
+							mi="0"+mi;
+						}
+						var s = dateObj.getSeconds();
+						if(s<10){
+							s="0"+s;
+						}
+						
+						var dateStr = y+"-"+m+"-"+d+" "+h+":"+mi+":"+s;
+						//console.log(dateStr);
+						
+						/*
+						년 : getFullYear() 
+						월 : getMonth()   => 자바와 똑같이 지금이 9월이면 8이 구해진다. +1을 해야 현재 달이 나온다.
+						일 : getDate()
+						시 : getHours()
+						분 : getMinutes()
+						초 : getSeconds()   시/분/초는 끝에 s가 붙어있다.
+						요일 : getDay()   => 숫자로 구해진다. 일요일->0, 월요일->1, 화요일->2,....토요일->6
+						*/
+						
+						
+						var author = $(this).find('author').text(); //기사를 쓴 기자 이름
+						var link = $(this).find('link').text(); //기사 본문의 주소
+						var description = $(this).find('description').text(); //기사 내용
+						var img = $(this).find('comments').text(); //기사 이미지경로
+						
+						var tag="<tr><td>";
+						//console.log("123"+author.trim()+"567");  이걸로 보니까 공백이 너무 많이 찍혀서 공백제거 함수인 trim()을 이용한다.
+						tag+="<b><a href='"+link+"'>"+title+"</a></b>";
+						tag+="("+dateStr;
+						if(author.trim()==""){  // trim()이용해서 공백제거
+							tag+=")<br/>";
+						}else{
+							tag+=", "+author+")<br/>";	
+						}
+						
+						tag+="<p><img src='"+img+"' align='left'/> " +description+"</p></td></tr>";
+						
+						//여기서 이미지에 align='left'속성을 넣으면 이미지가 왼쪽으로 붙게 만든다(right도가능). 이걸 하지 않으면 이미지 한줄=문장 한줄이된다. 이미지 하나에 여러줄이 나오게 하려면 꼭 이거 쓰기
+						
+						
+						$("#news").append(tag);
+					});
+					
+				}
+				
+				
+			},error:function(){
+				console.log("데이터를 전송받지 못하였습니다.")
+			}
+			
+			
+		});
+		
+	});
+</script>
+</head>
+<body>
+<table class="table table-hover"><tbody id="news"></tbody></table>  <!-- table-hover 속성을 쓰려면 tbody가 필요 -->
+</body>
+</html>
